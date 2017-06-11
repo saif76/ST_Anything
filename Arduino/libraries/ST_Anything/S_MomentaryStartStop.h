@@ -1,8 +1,9 @@
 //******************************************************************************************
-//  File: S_TimedRelay.h
-//  Authors: Dan G Ogorchock
+//  Files: S_MomentaryStartStop.cpp
+//  Authors: 
+//  credit : ST_Anything libraray authors
 //
-//  Summary:  S_TimedRelay is a class which implements the SmartThings "Relay" device capability.  It features
+//  Summary:  S_MomentaryStartStop is a class which implements the SmartThings "Relay" device capability.  It features
 //			  an automatic-turn-off time delay for a relay to emulate a button press.
 //
 //			  It inherits from the st::Sensor class and clones much from the st::Executor Class
@@ -12,18 +13,20 @@
 //
 //			  st::S_TimedRelay() constructor requires the following arguments
 //				- String &name - REQUIRED - the name of the object - must match the Groovy ST_Anything DeviceType tile name
-//				- byte pinOutput - REQUIRED - the Arduino Pin to be used as a digital output
+//				- byte pinOutputStart - REQUIRED - the Arduino Pin to be used as a digital output for start
+//				- byte pinOutputStop - REQUIRED - the Arduino Pin to be used as a digital output for stop
 //				- bool startingState - REQUIRED - the value desired for the initial state of the switch.  LOW = "off", HIGH = "on"
 //				- bool invertLogic - REQUIRED - determines whether the Arduino Digital Ouput should use inverted logic
 //				- long onTime - REQUIRED - the number of milliseconds to keep the output on, DEFGAULTS to 1000 milliseconds
 //				- long offTime - OPTIONAL - the number of milliseconds to keep the output off, DEFAULTS to 0
 //				- intnumCycles - OPTIONAL - the number of times to repeat the on/off cycle, DEFAULTS to 1
+//				- byte pinInputCurrentSensor - REQUIRED - the Arduino Pin to be used as a digital input to read current draw using sct-013-xxx sensor
 //
 //  Change History:
 //
 //    Date        Who            What
 //    ----        ---            ----
-//    2015-12-29  Dan Ogorchock  Original Creation
+//    2017-06-10  Saif Khan  Original Creation
 //
 //
 //******************************************************************************************
