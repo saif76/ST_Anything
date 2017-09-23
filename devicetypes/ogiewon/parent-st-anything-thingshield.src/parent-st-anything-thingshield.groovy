@@ -20,6 +20,8 @@
  *    2017-02-24  Dan Ogorchock  Created the new "Multiples" device handler as a new example
  *    2017-04-25  Dan Ogorchock  Updated to use the new Composite Device Handler feature
  *    2017-06-10  Dan Ogorchock  Added Dimmer Switch support
+ *    2017-07-09  Dan Ogorchock  Added number of defined buttons tile
+ *    2017-08-24  Allan (vseven) Change the way values are pushed to child devices to allow a event to be executed allowing future customization
  *
  */
  
@@ -41,14 +43,18 @@ metadata {
 
 	// Tile Definitions
 	tiles (scale: 2){
-		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 3, height: 2) {
+		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", label:'Refresh', action: "refresh.refresh", icon: "st.secondary.refresh-icon"
 		}
         
-		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 3, height: 2) {
+		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
 		}
 
+        valueTile("numberOfButtons", "device.numberOfButtons", inactiveLabel: false, width: 2, height: 2) {
+			state "numberOfButtons", label:'${currentValue} buttons', unit:""
+		}
+ 
 		childDeviceTiles("all")
 	}
 }
@@ -132,14 +138,15 @@ def parse(String description) {
             
             if (childDevice != null) {
                 //log.debug "parse() found child device ${childDevice.deviceNetworkId}"
-                if (namebase == "dimmerSwitch") { namebase = "switch"}  //use a "switch" attribute to maintain standards
-                childDevice.sendEvent(name: namebase, value: value)
-                log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
+//                if (namebase == "dimmerSwitch") { namebase = "switch"}  //use a "switch" attribute to maintain standards
+//                childDevice.sendEvent(name: namebase, value: value)
+                childDevice.generateEvent(namebase, value)
+				log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
                 //If event was dor a "Door Control" device, also update the child door control device's "Contact Sensor" to keep everything in synch
-                if (namebase == "doorControl") {
-                	childDevice.sendEvent(name: "contact", value: value)
-                    log.debug "${childDevice.deviceNetworkId} - name: contact, value: ${value}"
-                }
+//                if (namebase == "doorControl") {
+//                	childDevice.sendEvent(name: "contact", value: value)
+//                    log.debug "${childDevice.deviceNetworkId} - name: contact, value: ${value}"
+//                }
             }
             else  //must not be a child, perform normal update
             {
@@ -315,6 +322,9 @@ private void createChildDevice(String deviceName, String deviceNumber) {
             case "illuminance": 
             	deviceHandlerName = "Child Illuminance Sensor" 
             	break
+         	case "illuminancergb": 
+                deviceHandlerName = "Child IlluminanceRGB Sensor" 
+                break
             case "voltage": 
             	deviceHandlerName = "Child Voltage Sensor" 
             	break
